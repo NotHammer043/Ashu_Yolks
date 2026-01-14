@@ -64,4 +64,11 @@ WORKDIR /home/container
 COPY ./entrypoint.sh /entrypoint.sh
 RUN chmod +x /entrypoint.sh
 
+# Create container user
+RUN useradd -m -d /home/container -s /bin/bash container
+
+USER container
+ENV USER=container HOME=/home/container
+WORKDIR /home/container
+
 CMD ["/bin/bash", "/entrypoint.sh"]
