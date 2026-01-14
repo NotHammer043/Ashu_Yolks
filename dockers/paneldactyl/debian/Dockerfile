@@ -5,7 +5,8 @@ ENV PHP_VERSION="8.2"
 
 ADD --chmod=0755 https://github.com/mlocati/docker-php-extension-installer/releases/latest/download/install-php-extensions /usr/local/bin/
 
-# System dependencies + MySQL client
+RUN apt update
+RUN apt upgrade -y 
 RUN apt-get update && apt-get upgrade -y && \
     apt-get install -y --no-install-recommends \
         ca-certificates \
@@ -28,47 +29,43 @@ RUN apt-get update && apt-get upgrade -y && \
         figlet && \
     rm -rf /var/lib/apt/lists/*
 
-# PHP extensions
+RUN apt-get install -y lolcat figlet
+
 RUN docker-php-ext-install \
     zip \
     intl \
     sodium \
-    pdo \
     pdo_mysql \
+    pdo \
     mysqli \
     gd \
     bcmath
+    # xml \
+    # tokenizer \
+    # simplexml \
+    # session \
+    # posix \
+    # phar \
+    # mbstring \
+    # fileinfo \
+    # curl \
+    # dom \
+    # common
 
-# PHP-FPM symlink (safe even if unused)
-RUN ln -sf /usr/local/sbin/php-fpm /usr/sbin/php-fpm
+RUN ln -s /usr/sbin/php-fpm${PHP_VERSION} /usr/sbin/php-fpm
+COPY --from=composer:latest  /usr/bin/composer /usr/bin/composer
 
-# Composer
-COPY --from=composer:latest /usr/bin/composer /usr/bin/composer
-
-# Timezone
 RUN echo "UTC" > /etc/timezone
 
-# Cron script
 COPY ./crontab_test.sh /crontab_test.sh
 RUN chmod +x /crontab_test.sh
 
 ENV LANG=C.UTF-8
 ENV LC_ALL=C.UTF-8
 
-# Container user
 USER container
 ENV USER=container HOME=/home/container
 WORKDIR /home/container
 
-# Entrypoint
 COPY ./entrypoint.sh /entrypoint.sh
-RUN chmod +x /entrypoint.sh
-
-# Create container user
-RUN useradd -m -d /home/container -s /bin/bash container
-
-USER container
-ENV USER=container HOME=/home/container
-WORKDIR /home/container
-
 CMD ["/bin/bash", "/entrypoint.sh"]
