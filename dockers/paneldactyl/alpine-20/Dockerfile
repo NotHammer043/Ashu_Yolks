@@ -1,5 +1,5 @@
 FROM node:20-alpine AS node
-FROM alpine:3.20
+FROM alpine:3.19
 
 LABEL author="Ashu" maintainer="Matheusn.biolowons@gmail.com"
 ENV PHP_VERSION="82"
@@ -22,11 +22,7 @@ RUN apk add --no-cache --virtual=build-dependencies --upgrade \
     bash \
     ca-certificates \
     yarn
-
-RUN apk add --no-cache \
-    --repository=http://dl-cdn.alpinelinux.org/alpine/edge/community \
-    --repository=http://dl-cdn.alpinelinux.org/alpine/edge/testing \
-    figlet lolcat
+# build
 
 RUN echo "**** Instalação dos php${PHP_VERSION} ****" && \
     apk add --no-cache --update \
@@ -60,15 +56,15 @@ COPY --from=composer:latest  /usr/bin/composer /usr/bin/composer
 RUN apk add --no-cache fakeroot
 RUN echo "UTC" > /etc/timezone
 
-COPY ./crontab_test.sh /crontab_test.sh
-RUN chmod +x /crontab_test.sh
-
-ENV LANG=C.UTF-8
-ENV LC_ALL=C.UTF-8
+COPY ./crontab_test.sh /
+RUN chmod 777 /crontab_test.sh
 
 USER container
-ENV USER=container HOME=/home/container
+ENV  USER container
+ENV HOME /home/container
+
 WORKDIR /home/container
 
 COPY ./entrypoint.sh /entrypoint.sh
-CMD ["/bin/bash", "/entrypoint.sh"]
+
+CMD [ "bash", "/entrypoint.sh" ]
