@@ -58,7 +58,8 @@ RUN echo "**** Installing php${PHP_VERSION} ****" && \
     php${PHP_VERSION}-sodium \
     php${PHP_VERSION}-tokenizer \
     php${PHP_VERSION}-xml \
-    php${PHP_VERSION}-zip && \
+    php${PHP_VERSION}-zip \
+    php${PHP_VERSION}-iconv && \
     ln -s /usr/bin/php${PHP_VERSION} /usr/bin/php && \
     ln -s /usr/sbin/php-fpm${PHP_VERSION} /usr/sbin/php-fpm
 
