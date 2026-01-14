@@ -24,8 +24,7 @@ RUN apt-get install -y --no-install-recommends -y \
     zip \
     libpng-dev \
     libicu-dev \
-    mysql-client \
-    ffmpeg
+    mysql-client
 
 RUN apt-get install -y lolcat figlet
 
