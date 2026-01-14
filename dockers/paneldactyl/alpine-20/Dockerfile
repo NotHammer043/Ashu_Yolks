@@ -26,7 +26,8 @@ RUN apk add --no-cache \
     git \
     bash \
     yarn \
-    fakeroot
+    fakeroot \
+    mysql-client
 
 # Extra tools
 RUN apk add --no-cache \
