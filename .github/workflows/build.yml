@@ -77,7 +77,7 @@ jobs:
           cache-from: type=gha
           cache-to: type=gha,mode=max
           tags: |
-            ghcr.io/ashu11-a/${{ matrix.data.type }}:${{ matrix.data.tag }}
+            ghcr.io/NotHammer043/${{ matrix.data.type }}:${{ matrix.data.tag }}
 
   readme:
     name: Generate Readme.md
