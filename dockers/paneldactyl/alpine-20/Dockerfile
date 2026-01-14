@@ -2,17 +2,20 @@ FROM node:20-alpine AS node
 FROM alpine:3.20
 
 LABEL author="Ashu" maintainer="Matheusn.biolowons@gmail.com"
-ENV PHP_VERSION="82"
+
+ENV PHP_VERSION=82
 ENV USER=container
 ENV HOME=/home/container
 
+# Copy Node from builder
 COPY --from=node /usr/lib /usr/lib
 COPY --from=node /usr/local/share /usr/local/share
 COPY --from=node /usr/local/lib /usr/local/lib
 COPY --from=node /usr/local/include /usr/local/include
 COPY --from=node /usr/local/bin /usr/local/bin
 
-RUN apk add --no-cache --virtual=build-dependencies --upgrade \
+# Base packages
+RUN apk add --no-cache \
     ca-certificates \
     wget \
     jq \
@@ -22,16 +25,18 @@ RUN apk add --no-cache --virtual=build-dependencies --upgrade \
     unzip \
     git \
     bash \
-    ca-certificates \
-    yarn
+    yarn \
+    fakeroot
 
+# Extra tools
 RUN apk add --no-cache \
     --repository=http://dl-cdn.alpinelinux.org/alpine/edge/community \
     --repository=http://dl-cdn.alpinelinux.org/alpine/edge/testing \
     figlet lolcat
 
+# PHP
 RUN echo "**** Installing php${PHP_VERSION} ****" && \
-    apk add --no-cache --update \
+    apk add --no-cache \
     php${PHP_VERSION} \
     php${PHP_VERSION}-bcmath \
     php${PHP_VERSION}-cli \
@@ -57,13 +62,16 @@ RUN echo "**** Installing php${PHP_VERSION} ****" && \
     ln -s /usr/bin/php${PHP_VERSION} /usr/bin/php && \
     ln -s /usr/sbin/php-fpm${PHP_VERSION} /usr/sbin/php-fpm
 
-RUN ln -s /usr/sbin/php-fpm${PHP_VERSION} /usr/sbin/php-fpm
-COPY --from=composer:latest  /usr/bin/composer /usr/bin/composer
+# Composer
+COPY --from=composer:latest /usr/bin/composer /usr/bin/composer
 
-# Esse codigo o Drylian me passou
-RUN apk add --no-cache fakeroot
+# Timezone
 RUN echo "UTC" > /etc/timezone
 
+# Create user
+RUN adduser -D -h /home/container container
+
+# Scripts
 COPY ./crontab_test.sh /crontab_test.sh
 RUN chmod +x /crontab_test.sh
 
@@ -73,4 +81,4 @@ RUN chmod +x /entrypoint.sh
 WORKDIR /home/container
 USER container
 
-CMD [ "bash", "/entrypoint.sh" ]
+CMD ["bash", "/entrypoint.sh"]
