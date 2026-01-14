@@ -30,7 +30,7 @@ RUN apk add --no-cache \
     --repository=http://dl-cdn.alpinelinux.org/alpine/edge/testing \
     figlet lolcat
 
-RUN echo "**** Instalação dos php${PHP_VERSION} ****" && \
+RUN echo "**** Installing php${PHP_VERSION} ****" && \
     apk add --no-cache --update \
     php${PHP_VERSION} \
     php${PHP_VERSION}-bcmath \
@@ -53,7 +53,9 @@ RUN echo "**** Instalação dos php${PHP_VERSION} ****" && \
     php${PHP_VERSION}-sodium \
     php${PHP_VERSION}-tokenizer \
     php${PHP_VERSION}-xml \
-    php${PHP_VERSION}-zip
+    php${PHP_VERSION}-zip && \
+    ln -s /usr/bin/php${PHP_VERSION} /usr/bin/php && \
+    ln -s /usr/sbin/php-fpm${PHP_VERSION} /usr/sbin/php-fpm
 
 RUN ln -s /usr/sbin/php-fpm${PHP_VERSION} /usr/sbin/php-fpm
 COPY --from=composer:latest  /usr/bin/composer /usr/bin/composer
