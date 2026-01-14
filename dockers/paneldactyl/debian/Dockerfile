@@ -7,7 +7,8 @@ ADD --chmod=0755 https://github.com/mlocati/docker-php-extension-installer/relea
 
 RUN apt update
 RUN apt upgrade -y 
-RUN apt-get install -y --no-install-recommends -y \
+RUN apt-get update && apt-get install -y --no-install-recommends \
+    default-mysql-client \
     ca-certificates \
     wget \
     jq \
@@ -17,14 +18,13 @@ RUN apt-get install -y --no-install-recommends -y \
     unzip \
     git \
     bash \
-    ca-certificates \
     fakeroot \
     libsodium-dev \
     libzip-dev \
     zip \
     libpng-dev \
     libicu-dev \
-    mysql
+    && rm -rf /var/lib/apt/lists/*
 
 RUN apt-get install -y lolcat figlet
 
